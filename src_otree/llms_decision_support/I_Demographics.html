@@ -1,0 +1,70 @@
+{{ block title }}
+    End-of-experiment questions
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        p {
+            text-align: justify;
+        }
+        .bottom-align {
+            vertical-align: bottom;
+        }
+        .top-align {
+            vertical-align: top;
+        }
+        .right-align {
+            text-align: right;
+        }
+        .column-padding {
+            padding: 1px 10px;
+        }
+        .non-bold-header {
+            font-weight: normal;
+        }
+        .do-not-show {
+            display: none;
+        }
+    </style>    
+    {% if player.termination_flag %}
+        <p>
+            The experiment has been <strong>terminated</strong> since you exceeded the maximum number of tries allowed
+            to correctly answer one set of understanding questions.
+        </p>
+        <p>
+            Please answer the Demographics questions below.
+            You will receive the information on <strong>your payoff</strong> directly afterwards on the next page.
+        </p>
+    {% else %}
+        <p>
+            Finally, please answer the following Demographics questions:
+        </p>
+    {% endif %}
+
+    {{ formfield "age" }}
+    {{ formfield_errors "age" }}
+    {{ formfield "sex" }}
+    {{ formfield "nationality" }}
+    {{ formfield "education" }}
+    {{ formfield "position" }}
+
+    {% if CURRENCY == "USD" %}
+        {{ formfield "degree_program" }}
+    {% elif player.degree_program == "Management & Technology (B.Sc.)" %}
+        {{ formfield "degree_specialization_tech_bsc" }}
+    {% elif player.degree_program == "Management & Technology (M.Sc.)" %}
+        {{ formfield "degree_specialization_tech_msc" }}
+        {{ formfield "degree_specialization_mgmt_msc" }}
+    {% endif %}
+
+    {{ formfield "english_native_speaker" }}
+    {{ formfield "english_proficiency" }}
+    {{ formfield "open_feedback" }}
+
+    {{ next_button }}
+
+    
+{{ endblock }}

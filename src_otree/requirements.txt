@@ -1,0 +1,15 @@
+# oTree-may-not-overwrite-this-file
+otree==5.11.1
+psycopg2>=2.8.4
+sentry-sdk>=0.7.9
+gurobipy==12.0.0
+numpy==1.26.4
+openai==1.54.4
+OptiGuide==0.0.3
+pyautogen==0.3.2
+jsonschema==4.23.0
+async-timeout==5.0.1
+dropbox==12.0.2
+httpcore==1.0.6
+httpx==0.27.2
+websockets==10.1

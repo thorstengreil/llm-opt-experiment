@@ -1,0 +1,63 @@
+<style>
+    body {
+        background-color: #f4f4f4;
+    }
+    p {
+        text-align: justify;
+    }
+    .element_image {
+        display: flex;
+        flex-direction: column;
+        justify-content: left;
+        align-items: left;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        padding: 20px;
+        width: 100%;
+    }
+    .general_error_msg {
+        color: #B64545;
+    }
+    .svg-wrapper {
+        display: grid;
+        justify-items: center; /* horizontal */
+    }
+    .svg-wrapper svg {
+        position: static !important; /* cancels absolute/fixed position from svg file */
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+</style>
+<h3>
+    Part 1: Disruptions
+</h3>
+
+<p>
+    The supply chain is prone to <strong>disruptions</strong> as some suppliers and roasteries may default. 
+    Disruptions may occur between the time you activate suppliers and roasteries, 
+    and the actual roasting and shipping of coffee through the network.
+    This means if a supplier or a roastery defaults, you still pay for their fixed cost, 
+    but cannot use them to supply or roast coffee. 
+    Customers are never disrupted.
+</p>
+<p>
+    The <strong>probability of disruption</strong> for each entity is displayed within the network.
+    This probability allows you to estimate how likely a supplier or roastery will default.
+    For example, a 10% chance of a supplier defaulting means, on average, 
+    this supplier will default 1 out of 10 times.
+    Disruptions across different entities are independent of each other.
+    Entities without a specified probability of disruption cannot default.
+</p>
+<p>
+    After you submit your activation decisions, one specific disruption scenario is <strong>drawn randomly</strong> 
+    based on the <strong>disruption probabilities</strong>, and your profit is determined accordingly.
+</p>
+
+<div class="element_image">
+    <div class="svg-wrapper">
+        {% include "llms_decision_support/part1_problem_setting.svg" %}
+    </div>
+</div>
+<br>

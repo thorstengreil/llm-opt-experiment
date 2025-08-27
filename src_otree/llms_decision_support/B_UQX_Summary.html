@@ -1,0 +1,52 @@
+{{ block title }}
+    Understanding Questions | Summary
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        p {
+            text-align: justify;
+        }
+        .uq_sucess_msg {
+            color: #02960eaf;
+        }
+    </style>
+    {% if player.uq6_tries_left == MAX_UQ_TRIES_EX_POST %}
+        <div class="uq_sucess_msg">
+            <strong>You gained {{ CURRENCY }} {{ UQ_BONUS_PER_PAGE }}</strong> for answering all questions correctly on the first try on the previous page!
+        </div>
+    {% endif %}
+    <br>
+
+    <p>
+        {% if not DEACTIVATE_UQS %}
+            {% if player.achieved_nr_of_uq_bonuses > 0 %}
+                You answered the set of understanding questions on <strong>{{ player.achieved_nr_of_uq_bonuses }} 
+                {% if player.achieved_nr_of_uq_bonuses == 1 %}
+                    page 
+                {% else %}
+                    pages 
+                {% endif %}</strong>
+                correctly on the first try.
+                Therefore, <strong>{{ CURRENCY }} {{ payoff_uq_bonus_currency }}</strong> (= {{ CURRENCY }} {{ UQ_BONUS_PER_PAGE }} &times; {{ player.achieved_nr_of_uq_bonuses }}) has been added to your payoff.
+            {% else %}
+                You did <strong>not answer any pages</strong> with understanding questions correctly on the first try.
+                Therefore, your payoff remains unchanged.
+            {% endif %}
+        {% else %}
+            The requirement to <strong>answer understanding questions</strong> was deactivated.
+        {% endif %}
+    </p>
+
+    <p>
+        Please click on the <strong>'Next' button</strong> once you are ready to continue to <strong>part 1</strong> of the experiment task.
+    </p>
+
+    <br>
+    
+    {{ next_button }}
+
+{{ endblock }}

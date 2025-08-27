@@ -1,0 +1,55 @@
+{{ block title }}
+    Additional experiment-related questions
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        p {
+            text-align: justify;
+        }
+        .bottom-align {
+            vertical-align: bottom;
+        }
+        .top-align {
+            vertical-align: top;
+        }
+        .mid-align {
+            vertical-align: middle;
+        }
+        .right-align {
+            text-align: right;
+        }
+        .column-padding {
+            padding: 1px 10px;
+        }
+        .non-bold-header {
+            font-weight: normal;
+        }
+        .spaced-row {
+            padding-bottom: 10px;
+        }
+    </style>
+    <p>
+        Please <strong>carefully</strong> answer the following question:
+    </p>
+    
+    {{ formfield "general_risk_question" }}
+    
+    <br>
+
+    <p>
+        In addition, please <strong>rate your agreement</strong> with the following <strong>4 statements</strong>:
+    </p>
+    
+    {{ formfield "ev_knowledge" }}
+    {{ formfield "variability_knowledge" }}
+       
+    {{ formfield "chatgpt_experience" }}
+    {{ formfield "optimization_experience" }}
+
+    {{ next_button }}
+
+{{ endblock }}

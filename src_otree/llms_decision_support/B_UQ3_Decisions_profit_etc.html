@@ -1,0 +1,57 @@
+{{ block title }}
+    Understanding Questions (3/{{ NR_OF_UQ_PAGES }})
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        .element_image {
+            display: flex;
+            flex-direction: column;
+            justify-content: left;
+            align-items: left;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 20px;
+            width: 600px;
+        }
+        .general_error_msg {
+            color: #B64545;
+        }
+        .uq_sucess_msg {
+            color: #02960eaf;
+        }
+    </style>
+    {% if form.errors %}
+        <div class="general_error_msg">
+            You have {{ player.uq3_tries_left }} more tries left to submit all answers correctly.
+        </div>
+    {% endif %}
+    {% if player.uq2_tries_left == MAX_UQ_TRIES_EX_POST and player.uq3_tries_left == MAX_UQ_TRIES %}
+        <div class="uq_sucess_msg">
+            <strong>You gained {{ CURRENCY }} {{ UQ_BONUS_PER_PAGE }}</strong> for answering all questions correctly on the first try on the previous page!
+        </div>
+    {% endif %}
+    <br>
+    
+    {{ include 'llms_decision_support/includable_templates/UQ3_instructions.html' }}
+
+    {{ formfields }}
+
+    <br>
+    
+    {{ next_button }}
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+{{ endblock }}

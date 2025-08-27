@@ -1,0 +1,185 @@
+{% if CURRENCY == "USD" %}
+    <div class="card bg-light m-3">
+        <div class="card-body">
+            <h3>
+                Consent to Participate in Research
+            </h3>
+            
+            <p>
+                The information below provides a summary of the research.
+            </p>
+            
+            <h5>Purpose</h5>
+            <p>
+                This study aims to investigate how people make decisions in a supply chain environment that may experience disruptions.
+                You will be randomly assigned to one of two groups.
+                Each group is using a different type of interface to make decisions.
+            </p>
+            
+            <h5>Study Procedures</h5>
+            <p>
+                First, you will read a set instructions and answer questions to confirm your understanding.
+                During the experiment itself, you will then make decisions in an exemplary supply chain setting.
+                The study will take approximately 60 minutes to complete. 
+            </p>
+
+            <h5>Payment</h5>
+            <p>
+                Your payoff will range between {{ CURRENCY }} {{ BASE_PAYOFF }} and {{ CURRENCY }} {{ TOTAL_MAX_PAYOFF }}, 
+                depending on your decisions in the experiment and an element of chance.
+                Due to organizational policies, you will be paid via electronic gift certificate.
+                You should receive an email about this within five business days.
+            </p>
+
+            <h5>Eligibility</h5>
+            <p>
+                You must be at least 18 years of age to participate.
+                You should be a student of business administration, supply chain management, or related fields
+                at Massachusetts Institute of Technology.
+            </p>
+
+            <h5>Declining to Answer and Right of Withdrawal</h5>
+            <p>
+                Your participation in this research is voluntary.
+                You may decline to answer any or all questions and you can withdraw at any time without any adverse consequences.
+            </p>
+
+            <h5>Data Protection</h5>
+            <p>
+                Data collected is anonymized, and no personal identifiers will be stored as part of the research data.
+                Personal information required for payment will be stored separately and used only for processing payments.
+                Please refrain from discussing the study with others to ensure future participants remain unbiased.
+            </p>
+        </div>
+    </div>
+{% else %}
+    <div class="card bg-light m-3">
+        <div class="card-body">
+            <h3>
+                Information and Consent Form for the Research Project:
+            </h3>
+            <h5><i>Supply Chain Decision-Making: A behavioral perspective</i></h5>
+            <br>
+            <h5>Information</h5>
+            <p>
+                Dear Participant,
+            </p>
+            <p>
+                We would like to ask if you are interested in participating in a scientific study.
+                This document contains all essential information about the study.
+                A total of 200 participants will be included across two institutions.
+                Our institution will enroll 110 participants.
+                The study was designed by the Massachusetts Institute of Technology and is being conducted in cooperation with the Technical University of Munich.
+                Our institution is funding the study independently.
+                The study has been reviewed by an independent ethics committee.
+                No objections were raised against its execution.
+                Participation in this study is voluntary.
+                You may withdraw at any time without providing a reason, and doing so will not result in any disadvantages for you.
+                Please read this information carefully.
+                The study director will answer any questions you may have.
+            </p>
+            
+            <h5>Why is this study being conducted?</h5>
+            <p>
+                We aim to investigate how people make decisions in the context of supply chains.
+                This includes decisions regarding the selection of suppliers and production locations.
+                The decisions are monetarily incentivized, meaning that your payoff will vary depending on your decisions and an element of chance. 
+            </p>
+
+            <h5>What is the study procedure?</h5>
+            <p>
+                You will complete a one-time, two-part experiment on a computer, lasting approximately 45 minutes.
+                Both parts require you to make decisions under uncertainty, meaning that your outcome for each part is subject to a predefined random influence.
+                Afterward, you will answer some questions about your decisions.
+            </p>
+
+            <h5>Is there a personal benefit to participating in the study?</h5>
+            <p>
+                Besides monetary compensation, participation may help you develop a better understanding of similar decision-making problems, which could be beneficial for your professional life.
+                However, no benefits are guaranteed and depend on factors such as your engagement with the study.
+            </p>
+
+            <h5>What risks are associated with participating in the study?</h5>
+            <p>
+                Apart from data protection risks, there are no risks associated with participation.
+                More details can be found under "Information on Data Protection."
+            </p>
+
+            <h5>Is there financial compensation?</h5>
+            <p>
+                This information will be repeated in the experiment.
+                You will receive a cash amount as compensation whose value is determined by three components:
+                You will receive {{ CURRENCY }} {{ BASE_PAYOFF }} as base payoff for attending in person.
+                Before the decision-making phase, you will be required to review some information and demonstrate your understanding by correctly answering questions.
+                You can earn up to {{ CURRENCY }} {{ MAX_UQ_BONUS }} in additional compensation if you answer correctly on the first attempt.
+                The third component depends on your decisions and an element of chance.
+                The maximum possible total compensation is {{ CURRENCY }} {{ TOTAL_MAX_PAYOFF }}.
+            </p>
+
+            <h5>Can I withdraw or be excluded from the study?</h5>
+            <p>
+                Participation in this study is voluntary, and consent may be withdrawn at any time.
+                You can request the deletion of your generated data immediately after the experiment (see section “Information on Data Protection” for further details).
+                In both cases, you will not receive any compensation.
+            </p>
+            <p>
+                If you fail to answer a set of introductory questions correctly within two attempts, the experiment will end for you.
+                In that case, you will receive the {{ CURRENCY }} {{ BASE_PAYOFF }} base payoff plus any previously earned bonus payments
+                ({{ CURRENCY }} {{ UQ_BONUS_PER_PAGE }} per correctly answered set, with {{ NR_OF_UQ_PAGES }} sets in total).
+                This mechanism is necessary to ensure that all participants have a uniform understanding of the problem.
+                You may also be excluded from the study for organizational reasons.
+            </p>
+
+            <h5>Information on Data Protection</h5>
+            <p>
+                The Chair of Production and Supply Chain Management at the Technical University of Munich (scm@wi.tum.de) is responsible
+                for data processing in this study.
+                The legal basis for processing your data is your personal consent (Art. 6(1)(a), Art. 9(2)(a) GDPR).
+                Your data will be treated confidentially at all times.
+                The data will be collected exclusively for this study and used only within its scope.
+                The data also includes personally identifiable information such as age (in years) and gender.
+                Any data that could directly identify you (e.g., your name or birthdate) will be deleted or altered in a way that ensures that nobody,
+                including the study investigators, can trace the data back to you (anonymization).
+                The data will be stored at the Technical University of Munich and deleted 10 years after the study ends.
+                We will not share the collected data with any other institution in Germany, the EU, non-EU countries, or international organizations.
+                Your consent for data processing is voluntary.
+                You may withdraw your consent at any time without providing a reason and without any disadvantages.
+                After withdrawal, no further data will be collected.
+                However, the legality of data processing that occurred before withdrawal remains unaffected.
+                You have the right to request information about your data, including a free copy of your records.
+                You may also request correction or deletion of your data.
+                However, once data has been anonymized, it can no longer be assigned to you and therefore cannot be accessed, corrected, or deleted.
+            </p>
+            <p>
+                For any inquiries, please contact Thorsten Greil (thorsten.greil@tum.de).
+            </p>
+            <p>
+                For data protection concerns, contact the Data Protection Officer:
+                <br>
+                Official Data Protection Officer of the Technical University of Munich
+                <br>
+                Mailing Address: Arcisstr. 21, 80333 Munich
+                <br>
+                Phone: +49 (0)89 / 289-17052
+                <br>
+                Email: beauftragter@datenschutz.tum.de
+            </p>
+            <p>
+                You have the right to file a complaint with any data protection authority.
+                A list of German authorities can be found at:
+                https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html
+            </p>
+            <p>
+                The relevant authority for you is:
+                <br>
+                Bavarian State Commissioner for Data Protection
+                <br>
+                Mailing Address: P.O. Box 22 12 19, 80502 Munich
+                <br>
+                Office Address: Wagmüllerstraße 18, 80538 Munich
+                <br>
+                Email: poststelle@datenschutz-bayern.de
+            </p>
+        </div>
+    </div>
+{% endif %}

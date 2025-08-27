@@ -1,0 +1,72 @@
+{{ block title }}
+    Part 2: Outcome
+{{ endblock }}
+
+{{ block content }}
+
+<head>
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items to the top */
+        }
+        p {
+            text-align: justify;
+        }
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+        .element {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 20px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="element">
+            <p>
+                Your decisions led to an <strong>outcome of COF$
+                {{ p2_outcome }}</strong>.
+            </p>
+
+            <p>
+                This was determined by randomly selecting one of your choice's scenarios
+                according to their probabilities:
+                <ul class="decisions-list">
+                    {% for key, value in r2_possible_scenarios.items() %}
+                        <li data-value="{{ value }}"><span>COF$ {{ key }}: <i>{{ value }}%</i></span></li>
+                    {% endfor %}
+                </ul>
+            </p>
+
+            <p>
+                For your <strong>final payoff</strong>, one of your two outcomes
+                (i.e. COF$ {{ p1_outcome }} from part 1 or COF$ {{ p2_outcome }} from part 2)
+                will be randomly chosen with a 50:50 chance.
+                You will see your final payoff in {{ CURRENCY }} on the <strong>final page</strong> of this experiment. 
+            </p>
+        </div>
+        
+    <br>
+
+    {{ next_button }}
+
+</body>
+{{ endblock }}

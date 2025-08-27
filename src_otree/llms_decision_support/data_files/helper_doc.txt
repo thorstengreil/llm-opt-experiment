@@ -1,0 +1,22 @@
+import gurobipy as grb
+import numpy as np
+from llms_decision_support.python_files.coffee_stochastic_evaluation import StochasticModel
+
+# Classmethod within StochasticModel
+@classmethod
+def evaluate_stochastic(fixed_activation_decisions):
+    """
+    Use this function if the user asks to evaluate a specific activation setting in general,
+    or explicitly across various disruption scenarios.
+    
+    Parameters:
+        fixed_activation_decisions : dict
+            Maps all(!) suppliers or roasteries to activation decisions:
+                - Suppliers: "activate" or "do not activate".
+                - Roasteries: "do not activate", "activate (low)", or "activate (high)".
+            Example: {"supplier1": "activate", [...],  "roastery2": "activate (low)"}
+
+    Return: dict
+        - keys: all profit scenarios
+        - values: their respective probabilities
+    """

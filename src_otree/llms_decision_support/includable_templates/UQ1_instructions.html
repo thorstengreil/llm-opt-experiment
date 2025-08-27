@@ -1,0 +1,71 @@
+<style>
+    body {
+        background-color: #f4f4f4;
+    }
+    p {
+        text-align: justify;
+        margin-top: 0px;
+        margin-bottom: 5px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 5px;
+        vertical-align: top;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+<h3>
+    Compensation details
+</h3>
+
+<p>
+    Your compensation consists of <strong>three parts</strong>.
+</p>
+<table>
+    <tr>
+        <td>(A)</td>
+        <td>
+            <p>
+                You will receive a <strong>base compensation</strong> of {{ CURRENCY }} {{ BASE_PAYOFF }}.
+            </p>
+        </td>
+    </tr>
+
+    <tr>
+        <td>(B)</td>
+        <td>
+            <p>
+                If you answer all understanding questions on a page <strong>correctly on the
+                first try</strong>, you will get an additional {{ CURRENCY }} {{ UQ_BONUS_PER_PAGE }} (per page).
+                There are {{ NR_OF_UQ_PAGES }} pages to ensure your understanding before the experiment
+                begins, i.e. you can earn a <strong>maximum bonus</strong> of {{ CURRENCY }}
+                {{ UQ_BONUS_PER_PAGE }} &times; {{ NR_OF_UQ_PAGES }} = {{ CURRENCY }} {{ MAX_UQ_BONUS }} for this part.
+            </p>
+            <p>
+                If you <strong>fail to answer</strong> the questions on a page correctly in {{ MAX_UQ_TRIES }} tries,
+                you will <span style="color: red;"><strong>not be allowed to continue the experiment</strong></span>.
+                In this case, your payoff will be the base compensation plus your accumulated bonus, if any.
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>(C)</td>
+        <td>
+            <p>
+                You will additionally be paid based on your <strong>decisions and an element of chance</strong>.
+                You can receive a maximum additional payoff of {{ CURRENCY }} {{ MAX_DECISIONS_PAYOFF }}
+                (i.e. a total maximum payoff of {{ CURRENCY }} {{ TOTAL_MAX_PAYOFF }} incl. base payoff and full understanding bonus).
+                More details on the payoff based on your decisions will be explained on the following pages.
+            </p>
+        </td>
+    </tr>
+</table>
+<p>
+    Here are the first understanding questions (this is <strong>not a test round</strong>):
+</p>
+<br>

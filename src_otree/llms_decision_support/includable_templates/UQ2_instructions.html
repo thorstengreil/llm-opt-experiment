@@ -1,0 +1,78 @@
+<style>
+    body {
+        background-color: #f4f4f4;
+    }
+    p {
+        text-align: justify;
+    }
+    .element_image {
+        display: flex;
+        flex-direction: column;
+        justify-content: left;
+        align-items: left;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        padding: 20px;
+        width: 100%;
+    }
+    .svg-wrapper {
+        display: grid;
+        justify-items: center; /* horizontal */
+    }
+    .svg-wrapper svg {
+        position: static !important; /* cancels absolute/fixed position from svg file */
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+</style>
+<h3>
+    Setting and Task
+</h3>
+
+<p>
+    The experiment itself consists of <strong>2 different parts</strong>.
+</p>
+<p>
+    <strong>Part 1</strong> revolves around a <strong>coffee network</strong> 
+    with 3 suppliers, 2 roasteries, and 3 customers.
+    Suppliers provide raw coffee, roasteries roast it (light or dark roast),
+    and the roasted coffee is shipped and sold to customers.
+</p>
+<p>
+    For part 1, you are a supply chain planner tasked with <strong>deciding which suppliers
+    and roasteries to activate</strong> in this network.
+    Your outcome for part 1 depends on the profit you achieve with your decisions.
+</p>
+
+<div class="element_image">
+    <div class="svg-wrapper">
+        {% include "llms_decision_support/part1_problem_setting.svg" %}
+    </div>
+</div>
+<br>
+
+<p>
+    In <strong>part 2</strong> of the experiment, you need to choose from a list of alternative payoff schemes.
+    Your outcome for part 2 depends on this choice and an element of chance.
+</p>
+<p>
+    In the end of the experiment, <strong>either</strong> your outcome from part 1 or part 2 will <strong>randomly determine your payoff</strong> (50:50 chance).
+</p>
+<p>
+    If not stated otherwise, monetary values are given in the <strong>fictional currency</strong> Coffee Dollars (<strong>COF$</strong>).
+    The conversion from <strong>Coffee Dollars (COF$) to {{ CURRENCY }}</strong> is
+</p>
+<p style="text-align: center;">
+    <i>
+        1 COF$ = {{ COFD_TO_CURRENCY }} {{ CURRENCY }}.
+    </i>
+</p>
+<p>
+    So for <strong>example</strong> if you make a <strong>profit</strong> in COF$ of 1,000,
+    your outcome would be <i>{{ CURRENCY }} {{ COFD_1000_TO_CURRENCY }}
+    &#8776; COF$ 1,000 &times; {{ COFD_TO_CURRENCY }} {{ CURRENCY }} / COF$</i>. 
+    If you encounter the '$' sign during the experiment, it refers to COF$.
+</p>
+<br>

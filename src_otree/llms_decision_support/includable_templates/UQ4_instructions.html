@@ -1,0 +1,57 @@
+<style>
+    body {
+        background-color: #f4f4f4;
+    }
+    p {
+        text-align: justify;
+    }
+    .element_image {
+        display: flex;
+        flex-direction: column;
+        justify-content: left;
+        align-items: left;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        padding: 20px;
+        width: 100%;
+    }
+    .svg-wrapper {
+        display: grid;
+        justify-items: center; /* horizontal */
+    }
+    .svg-wrapper svg {
+        position: static !important; /* cancels absolute/fixed position from svg file */
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+</style>
+
+<h3>
+    Part 1: Decision Selection
+</h3>
+
+<p>
+    The <strong>fixed cost</strong> is independent of the actual coffee flow.
+    Even if the coffee flow to or from a supplier or roastery is zero,
+    you have to pay the fixed cost if you previously decided to activate them.
+</p>
+<p>
+    <strong>Shipping</strong> between suppliers, roasteries, and customers is <strong>optimized automatically</strong>,
+    given your supplier and roastery activation decisions.
+    Shipping cost per unit vary depending on the route.
+</p>
+<p>
+    <strong>Suppliers</strong> can be set inactive or active.
+    <strong>Clicking</strong> on a supplier will activate it, clicking again will deactivate it.
+    <strong>Roasteries</strong> can be set inactive, active with 'Low' capacity or active with 'High' capacity.
+    Clicking on a roastery allows you to <strong>toggle</strong> between all <strong>three states</strong>.
+</p>
+
+<div class="element_image">
+    <div class="svg-wrapper">
+        {% include "llms_decision_support/part1_problem_setting.svg" %}
+    </div>
+</div>
+<br>

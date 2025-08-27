@@ -1,0 +1,422 @@
+{{ block title }}
+    Understanding Questions (4/{{ NR_OF_UQ_PAGES }})
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        p {
+            text-align: justify;
+        }
+        .element_decisions {
+            display: flex;
+            flex-direction: column;
+            justify-content: left;
+            align-items: left;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(226, 251, 1, 0.5);
+            padding: 20px;
+            width: 50%;
+        }
+        .network {
+            display: flex;
+            justify-content: space-between;
+            padding: 0px;
+            align-items: flex-start;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .node {
+            width: 110px;
+            margin: 4px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+        }
+        .node.active-supplier {
+                background-color: #b4e5a2;
+                border-color: #b4e5a2;
+        }
+        .node.active-mode1 {
+            background-color: #c1e5f5;
+            border-color: #c1e5f5;
+        }
+        .node.active-mode2 {
+            background-color: #5ab9e4;
+            border-color: #5ab9e4;
+        }
+        .node.connected {
+            background-color: lightgrey;
+        }
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        line {
+            stroke: #a0a2a3;
+            stroke-width: 1.0;
+            marker-end: url(#arrow);
+        }
+        #suppliers .node, #customers .node {
+            cursor: default;
+        }
+        .general_error_msg {
+            color: #B64545;
+        }
+        .uq_sucess_msg {
+            color: #02960eaf;
+        }
+        .svg-wrapper {
+            display: grid;
+            justify-items: center; /* horizontal */
+        }
+        .svg-wrapper svg {
+            position: static !important; /* cancels absolute/fixed position from svg file */
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        .svg-wrapper-legend {
+            display: grid;
+            justify-items: center; /* horizontal */
+        }
+        .svg-wrapper-legend svg {
+            position: static !important; /* cancels absolute/fixed position from svg file */
+            display: block;
+            width: 400px;
+            height: auto;
+        }
+    </style>
+    {% if form.errors %}
+        <div class="general_error_msg">
+            You have {{ player.uq4_tries_left }} more tries left to submit all answers correctly.
+        </div>
+    {% endif %}
+    {% if player.uq3_tries_left == MAX_UQ_TRIES_EX_POST and player.uq4_tries_left == MAX_UQ_TRIES %}
+        <div class="uq_sucess_msg">
+            <strong>You gained {{ CURRENCY }} {{ UQ_BONUS_PER_PAGE }}</strong> for answering all questions correctly on the first try on the previous page!
+        </div>
+    {% endif %}
+    <br>
+    
+    {{ include 'llms_decision_support/includable_templates/UQ4_instructions.html' }}
+    
+    {% if not DEACTIVATE_UQS %}
+        {{ form.fixed_cost_impact.label }}
+        {{ form.fixed_cost_impact}}
+        {{ formfield_errors 'fixed_cost_impact' }}
+        <br>
+        
+        {{ formfield 'shipping_influence' }}
+        <br>
+
+        <p>
+            (Q4.3) In the <strong>sample</strong> network below (unrelated to the network you will be managing), 
+            please choose the <strong>activation setting where both suppliers are activated</strong> and 
+            <strong>Roastery 3 is activated in the 'High'</strong> capacity mode.
+            Do not activate Roastery 1 and Roastery 2.
+            <strong>Submit</strong> your selection along with your other answers via the 'Next' button.
+        </p>
+        <div class="element_decisions">
+            <div class="network" id="network">
+                <div id="suppliers" class="column"></div>
+                <div id="roasteries" class="column"></div>
+                <div id="customers" class="column"></div>
+                <svg id="svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="3" refY="3"
+                                orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#5f6871" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+            <br>
+            <p>
+                <div class="svg-wrapper-legend">
+                    {% include "llms_decision_support/legend_part1.svg" %}
+                </div>
+            </p>
+        </div>
+        
+        {{ formfield_errors 'decisions_selection_test' }}
+    {% endif %}
+
+    <script type="text/javascript">
+        const suppliers = ['supplier1', 'supplier2'];
+        const roasteries = ['roastery1', 'roastery2', 'roastery3'];
+        const customers = ['customer1', 'customer2', 'customer3'];
+
+        let page_loaded_counter = 0
+
+        const validConnections = {
+            "supplier1": ['roastery1', 'roastery2', 'roastery3'],
+            "supplier2": ['roastery1', 'roastery2', 'roastery3'],
+            "roastery1": ['customer1', 'customer2', 'customer3'],
+            "roastery2": ['customer1', 'customer2', 'customer3'],
+            "roastery3": ['customer1', 'customer2', 'customer3'],
+        };
+
+        function createNode(name, containerId) {
+            const container = document.getElementById(containerId);
+            const node = document.createElement('div');
+            node.className = 'node';
+            node.innerText = name;
+            node.id = name;
+            
+            const isSupplier = suppliers.includes(name);
+            const isCustomer = customers.includes(name);
+            if (!isCustomer) {
+                // Add event listener for click, passing true for suppliers and false for roasteries
+                node.addEventListener('click', () => {
+                    toggleActivation(node, isSupplier);
+                    updateNetwork();
+                });
+            }
+            
+            container.appendChild(node);
+        }
+
+        function toggleActivation(node, isSupplier) {
+            if (isSupplier) {
+                // Suppliers only have two modes: use or do not use
+                if (node.classList.contains('active-supplier')) {
+                    node.classList.remove('active-supplier');
+                } else {
+                    node.classList.add('active-supplier');
+                }
+            } else {
+                // Roasteries have three modes
+                if (node.classList.contains('active-mode1')) {
+                    node.classList.remove('active-mode1');
+                    node.classList.add('active-mode2');
+                } else if (node.classList.contains('active-mode2')) {
+                    node.classList.remove('active-mode2');
+                } else {
+                    node.classList.add('active-mode1');
+                }
+            }
+        }
+
+        function updateNetwork() {
+            updateArrows();
+            updateCustomerColors();
+        }
+
+        function updateArrows() {
+            const svg = document.getElementById('svg');
+            svg.innerHTML = `<defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="3" refY="3"
+                        orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#5f6871" />
+                </marker>
+            </defs>`;
+
+            const roasteryElements = roasteries.map(id => document.getElementById(id));
+            const customerElements = customers.map(id => document.getElementById(id));
+            const supplierElements = suppliers.map(id => document.getElementById(id)); // New supplier list
+
+            // Check if any supplier is activated
+            const anySupplierActivated = supplierElements.some(supplier => supplier.classList.contains('active-supplier'));
+            
+            let hasActiveSupplier = false;
+
+            // Draw arrows from active suppliers to roasteries
+            supplierElements.forEach(supplier => {
+                if (supplier.classList.contains('active-supplier')) {
+                    hasActiveSupplier = true;
+                    roasteryElements.forEach(roastery => {
+                        drawArrow(supplier, roastery, 'right'); // Draw arrows from suppliers to roasteries
+                    });
+                }
+            });
+
+            roasteryElements.forEach(roastery => {
+                // Only draw arrows if any supplier is activated
+                if (anySupplierActivated && (roastery.classList.contains('active-mode1') || roastery.classList.contains('active-mode2'))) {
+                    customerElements.forEach(customer => {
+                        drawArrow(roastery, customer, 'right');
+                    });
+                }
+            });
+        }
+
+        function drawArrow(fromElement, toElement, direction) {
+            if (!validConnections[fromElement.id] || !validConnections[fromElement.id].includes(toElement.id)) {
+                return;
+            }
+
+            const svg = document.getElementById('svg');
+            const network = document.getElementById('network');
+            const networkRect = network.getBoundingClientRect();
+            const fromRect = fromElement.getBoundingClientRect();
+            const toRect = toElement.getBoundingClientRect();
+            const fromX = fromRect.left - networkRect.left + (direction === 'right' ? fromRect.width : 0);
+            const fromY = fromRect.top - networkRect.top + fromRect.height / 2;
+            const toX = toRect.left - networkRect.left + (direction === 'right' ? -4 : toRect.width + 4);
+            const toY = toRect.top - networkRect.top + toRect.height / 2;
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', fromX);
+            line.setAttribute('y1', fromY);
+            line.setAttribute('x2', toX);
+            line.setAttribute('y2', toY);
+            svg.appendChild(line);
+        }
+
+        function updateCustomerColors() {
+            const activeRoasteries = roasteries.filter(id => {
+                const element = document.getElementById(id);
+                return element.classList.contains('active-mode1') || element.classList.contains('active-mode2');
+            });
+
+            const activeSuppliers = suppliers.filter(id => {
+                const element = document.getElementById(id);
+                return element.classList.contains('active-supplier');
+            });
+            
+            // Only change customer color if at least one roastery and one supplier are active
+            if (activeRoasteries.length > 0 && activeSuppliers.length > 0) {
+                customers.forEach(customerId => {
+                    const customerElement = document.getElementById(customerId);
+                    const isConnected = activeRoasteries.some(roasteryId => validConnections[roasteryId].includes(customerId));
+                    customerElement.classList.toggle('connected', isConnected);
+                });
+            } else {
+                // Reset customer color if no valid roastery-supplier connection
+                customers.forEach(customerId => {
+                    const customerElement = document.getElementById(customerId);
+                    customerElement.classList.remove('connected');
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            suppliers.forEach(supplier => createNode(supplier, 'suppliers'));
+            roasteries.forEach(roastery => createNode(roastery, 'roasteries'));
+            customers.forEach(customer => createNode(customer, 'customers'));
+            updateNetwork();
+        });
+        
+        function liveRecv(data) {
+            answer = String(data);
+            const dotsElement = document.getElementById('dots');
+            if (dotsElement) {
+                dotsElement.remove();
+            }
+            displayMessage(answer, 'bot');
+        }
+
+        function submitDecisionSelection() {
+            let decisionString = '';
+
+            // Process suppliers: Add "0" for unused suppliers and "1" for used suppliers
+            suppliers.forEach(supplier => {
+                const element = document.getElementById(supplier);
+                decisionString += element.classList.contains('active-supplier') ? '1' : '0';
+            });
+
+            // Process roasteries: Add "0" for unused, "1" for low mode, and "2" for high mode
+            roasteries.forEach(roastery => {
+                const element = document.getElementById(roastery);
+                if (element.classList.contains('active-mode2')) {
+                    decisionString += 'H'; // High mode
+                } else if (element.classList.contains('active-mode1')) {
+                    decisionString += 'L'; // Low mode
+                } else {
+                    decisionString += '0'; // Not used
+                }
+            });
+
+            // Store the decision string in localStorage
+            try {
+                localStorage.setItem('networkSelection', decisionString);
+            } catch {
+                // Do nothing if error occurs (network state will not be stored)
+            }
+
+            // Create or find the hidden input element for the decision string
+            let decisionField = document.getElementById('decisions_selection_test');
+            if (!decisionField) {
+                decisionField = document.createElement('input');
+                decisionField.type = 'hidden';
+                decisionField.name = 'decisions_selection_test';
+                decisionField.id = 'decisions_selection_test';
+                document.querySelector('form').appendChild(decisionField);
+            }
+
+            // Set the value of the hidden input fields to the decision string
+            decisionField.value = decisionString;
+        }
+
+        // Restore selection state from localStorage on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                if (!sessionStorage.getItem('pageLoaded')) {
+                    // Set a marker in sessionStorage to indicate the page has been loaded
+                    sessionStorage.setItem('pageLoaded', 'true');
+                    localStorage.setItem('networkSelection', "00000")
+                }
+                else {
+                    const decisionString = localStorage.getItem('networkSelection');
+                    
+                    page_loaded_counter += 1;
+                    if (decisionString) {
+                        // Restore suppliers
+                        suppliers.forEach((supplier, index) => {
+                            const element = document.getElementById(supplier);
+                            if (decisionString[index] === '1') {
+                                element.classList.add('active-supplier');
+                            }
+                        });
+
+                        // Restore roasteries
+                        roasteries.forEach((roastery, index) => {
+                            const element = document.getElementById(roastery);
+                            const state = decisionString[suppliers.length + index]; // Adjust index for roasteries
+                            if (state === 'L') {
+                                element.classList.add('active-mode1');
+                            } else if (state === 'H') {
+                                element.classList.add('active-mode2');
+                            }
+                        });
+                    }
+                    updateNetwork()
+                }
+            } catch {
+                updateNetwork()
+            } 
+        });
+
+    </script>
+    <br>
+    
+    <button onclick="submitDecisionSelection()" class="otree-btn-next btn btn-primary">
+        Next
+    </button>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+{{ endblock }}

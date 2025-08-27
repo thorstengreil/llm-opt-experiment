@@ -1,0 +1,98 @@
+{{ block title }}
+    Understanding Questions (5/{{ NR_OF_UQ_PAGES }})
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        .general_error_msg {
+            color: #B64545;
+        }
+        .uq_sucess_msg {
+            color: #02960eaf;
+        }
+    </style>
+    {% if form.errors %}
+        <div class="general_error_msg">
+            You have {{ player.uq5_tries_left }} more tries left to submit all answers correctly.
+        </div>
+    {% endif %}
+    {% if player.uq4_tries_left == MAX_UQ_TRIES_EX_POST and player.uq5_tries_left == MAX_UQ_TRIES %}
+        <div class="uq_sucess_msg">
+            <strong>You gained {{ CURRENCY }} {{ UQ_BONUS_PER_PAGE }}</strong> for answering all questions correctly on the first try on the previous page!
+        </div>
+    {% endif %}
+    <br>
+    
+    {{ include 'llms_decision_support/includable_templates/UQ5_instructions.html' }}
+    
+    {% if not DEACTIVATE_UQS %}
+        {{ form.disruption_timing.label }}
+        {{ form.disruption_timing}}
+        {{ formfield_errors 'disruption_timing' }}
+        <br>
+
+        {{ form.disruption_impact.label }}
+        {{ form.disruption_impact}}
+        {{ formfield_errors 'disruption_impact' }}
+        <br>
+
+        {{ form.disruption_definition.label }}
+        {{ form.disruption_definition}}
+        {{ formfield_errors 'disruption_definition' }}
+        <br>
+
+        (Q5.4) In the following example (unrelated to the network above), disruption probabilities are stated for different suppliers and roasteries.
+        In a specific scenario, some, all, or none of them may fail to deliver anything.
+        Entities not listed here cannot default.
+        <ul>
+            {% for key, value in disruption_risks_info_UQ_1.items() %}
+            <li data-value="{{ value }}"><span class="nodes-to-format">{{ key }}: <i>{{ value }}%</i></span></li>
+            {% endfor %}
+        </ul>
+
+        {{ form.disruption_examples_1.label }}
+        {{ form.disruption_examples_1}}
+        {{ formfield_errors 'disruption_examples_1' }}
+        <br>
+
+        {{ formfield 'disruption_examples_2'}}
+        <br>
+
+        {{ form.performance_evaluation.label }}
+        {{ form.performance_evaluation}}
+        {{ formfield_errors 'performance_evaluation' }}
+        <br>
+    {% endif %}
+    
+    {{ next_button }}
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {            
+            // Change the format from e.g. "supplier1" to "Supplier 1"
+            const decisionItems = document.querySelectorAll('.nodes-to-format');
+            decisionItems.forEach(item => {
+                const parts = item.textContent.split(': ');
+                const formattedName = formatEntityName(parts[0]);
+                item.innerHTML = `${formattedName}: <i>${parts[1]}</i>`;
+            });
+        });
+
+        function formatEntityName(name) {
+            // Capitalize the first letter and add a space before the number
+            return name.replace(/(\d+)/, ' $1').replace(/^./, str => str.toUpperCase());
+        }
+    </script>
+{{ endblock }}

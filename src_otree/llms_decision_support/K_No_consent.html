@@ -1,0 +1,39 @@
+{{ block title }}
+    Final page
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        p {
+            text-align: justify;
+        }
+    </style>
+    
+    <p>
+        You did <strong>not consent to participate</strong> in the study.
+        You will receive a show-up fee of <strong>{{ CURRENCY }} {{ SHOW_UP_FEE }}</strong>.
+    </p>
+
+    {% if CURRENCY == "USD" %}
+        <p>
+            Due to organizational policies, you will be paid via <strong>electronic gift certificate</strong>.
+            You should receive an email about this within five business days.
+        </p>
+
+        <p>
+            Please feel free to <strong>leave the experiment now</strong>.
+        </p>
+    {% else %}
+        <p>
+            Please <strong>remain seated</strong>.
+            The study conductor will provide information on how to facilitate the payout process.
+            You will be paid in <strong>cash</strong> upon exiting the experiment.
+        </p>
+    {% endif %}
+
+    
+    
+{{ endblock }}

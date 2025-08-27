@@ -1,0 +1,305 @@
+{{ block title }}
+    Part 2: Choose preferred set of scenarios
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-size: 14px;
+        }
+        p {
+            text-align: justify;
+        }
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+        .element {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 20px;
+            width: 100%;
+        }
+        .element-decision {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(226, 251, 1, 0.5);
+            padding: 20px;
+            width: 100%;
+        }
+        .bottom-align {
+            vertical-align: bottom;
+        }
+        .top-align {
+            vertical-align: top;
+        }
+        .mid-align {
+            vertical-align: middle;
+        }
+        .right-align {
+            text-align: right;
+        }
+        .column-padding {
+            padding: 1px 10px;
+        }
+        .non-bold-header {
+            font-weight: normal;
+        }
+        .spaced-row {
+            padding-bottom: 10px;
+        }
+        .intermittent-border {
+            position: relative;
+        }
+
+        .intermittent-border::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: calc(100% - 7px);
+            height: 1px;
+            background-color: black;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            z-index: 1100;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .popup-content {
+            max-height: calc(90vh - 120px);
+
+            overflow-y: auto;
+        }
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .reminder-closing-button {
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 140px;
+        }
+        .svg-wrapper {
+            display: grid;
+            justify-items: center; /* horizontal */
+        }
+        .svg-wrapper svg {
+            position: static !important; /* cancels absolute/fixed position from svg file */
+            display: block;
+            width: 125px;
+            height: auto;
+        }
+        .svg-wrapper-legend {
+            display: grid;
+            justify-items: center; /* horizontal */
+        }
+        .svg-wrapper-legend svg {
+            position: static !important; /* cancels absolute/fixed position from svg file */
+            display: block;
+            width: 500px;
+            height: auto;
+        }
+    </style>    
+    <div class="main-container">
+        {% if player.round_number == 1 %}
+            <div class="element">
+                <p>
+                    Reminder: For your <strong>final payoff</strong>, either your outcome from part 1 or from part 2
+                    will be <strong>randomly chosen</strong> (50:50 chance).
+                </p>
+                <p style="margin-bottom: 0;">
+                    You will see your outcomes after completing both part 1 and 2.
+                </p>
+            </div>
+        {% endif %}
+
+        <div class="element-decision">
+            <p>
+                For <strong>part 2</strong>, please <strong>choose one option</strong> from all rows in the table below.
+            </p>
+            <p>
+                Your <strong>outcome for part 2</strong> will be <strong>one</strong> of the COF$ values in the column 'Scenarios and probabilities' in your 
+                <strong>selected row</strong>, chosen randomly according to the given probabilities.
+            </p>
+            <p>
+                The scenarios and probabilities <strong>relate directly to Part 1</strong> of the experiment.
+                The <strong>decisions</strong> and <strong>default risks</strong> associated with each set of scenarios (i.e. with each row) are shown in the column 'Underlying decisions'.
+            </p>
+            <p>
+                {% with first_choice=p2_payoff_choices.0 %}
+                    <strong>Example:</strong> For the <strong>first row</strong> of the table, the scenarios indicate the potential 
+                    <strong>values in COF$</strong> (probability in %). There is a 
+                    {% for key, value in first_choice.scenarios.items %}
+                        {% if forloop.counter == 1 %}
+                            {{ value }} chance of earning {{ key }},
+                        {% elif forloop.counter == 2 %}
+                            a {{ value }} chance of earning {{ key }},
+                        {% elif forloop.counter == 3 %}
+                            and a {{ value }} chance of earning {{ key }}.
+                        {% endif %}
+                    {% endfor %}
+                    The associated <strong>decisions</strong> are activating suppliers 1 and 3 as well as Roastery 1 in capacity mode 'high'.
+                    Supplier 1 has a <strong>default risk</strong> of 30%, Roastery 1 of 10%.
+                {% endwith %}
+            </p>
+            <p>
+                Decisions and associated risks <strong>differ across rows</strong>.
+                The option in the first row of the table <strong>maximizes average profit</strong>.
+                However, this option may carry </strong>more risk</strong> than other activation settings.
+            </p>
+            <table>
+                <tr>
+                    <th class="bottom-align column-padding intermittent-border">Choose</th>
+                    <th class="bottom-align column-padding intermittent-border">
+                        Scenarios and<br>
+                        probabilities
+                    </th>
+                    <th class="bottom-align column-padding intermittent-border">
+                        Underlying decisions
+                    </th>
+                </tr>
+                {% for choice in p2_payoff_choices %}
+                <tr>
+                    <td class="top-align right-align column-padding spaced-row">
+                        <input type="radio" name="p2_decisions" value="{{ forloop.counter }}">
+                    </td>
+                    <td class="top-align column-padding">
+                        <ul style="padding-left: 20px;">
+                            {% for key, value in choice.scenarios.items %}
+                                <li>{{ key }}: {{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td class="top-align column-padding">
+                        {% if forloop.counter == 1 %}
+                            <div class="svg-wrapper" width="125px">
+                                {% include "llms_decision_support/S1____S3___R1-h_____.svg" %}
+                            </div>
+                        {% elif forloop.counter == 2 %}
+                            <div class="svg-wrapper">
+                                {% include "llms_decision_support/S1____S3___R1-l_R2-l.svg" %}
+                            </div>
+                        {% elif forloop.counter == 3 %}
+                            <div class="svg-wrapper">
+                                {% include "llms_decision_support/S1____S3___R1-l_R2-h.svg" %}
+                            </div>
+                        {% elif forloop.counter == 4 %}
+                            <div class="svg-wrapper">
+                                {% include "llms_decision_support/___S2_S3___R1-l_R2-h.svg" %}
+                            </div>
+                        {% elif forloop.counter == 5 %}
+                            <div class="svg-wrapper">
+                                {% include "llms_decision_support/S1_S2_S3___R1-l_R2-h.svg" %}
+                            </div>
+                        {% elif forloop.counter == 6 %}
+                            <div class="svg-wrapper">
+                                {% include "llms_decision_support/___S2_S3________R2-h.svg" %}
+                            </div>
+                        {% endif %}
+                        <br>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {{ formfield_errors 'p2_decisions' }}
+            <br>
+            <div class="svg-wrapper-legend">
+                {% include "llms_decision_support/legend_part2.svg" %}
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+
+    {% if ENABLE_REMINDER_POPUP %}
+        <div id="reminderPopup" class="popup">
+            <div class="popup-header">
+                <h2 style="color: red;">&#9888; Reminder</h2> 
+            </div>
+            <div class="popup-content">
+                <div class="card bg-light m-3">
+                    <div class="card-body">
+                        <h4>
+                            You are <strong>only</strong> going through <strong>1 round</strong>.
+                        </h4>
+                        <br>
+                        <p>
+                            Your <strong>final payoff</strong> will be determined by your performance in part 1
+                            or part 2 of the experiment (50:50 chance).
+                        </p>
+                        <p>
+                            <strong>Click</strong> 'I understand' to continue to part 2.
+                        </p>
+                        <button type="button" class="reminder-closing-button" onclick="closePopup()">I understand</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <br>
+
+    {{ next_button }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('reminderPopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        });
+        
+        function closePopup() {
+            document.getElementById('reminderPopup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            }
+    </script>
+
+{{ endblock }}

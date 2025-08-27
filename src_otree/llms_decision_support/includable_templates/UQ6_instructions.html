@@ -1,0 +1,42 @@
+<style>
+    body {
+        background-color: #f4f4f4;
+    }
+    p {
+        text-align: justify;
+    }
+</style>
+<h3>
+    Part 1: Decision Support
+</h3>
+
+<p>
+    As decision support, you will be provided with a <strong>possible activation setting</strong> for the network which <strong>maximizes 
+    the average profit</strong> over many disruption scenarios, considering the disruption probabilities.
+    However, this activation setting may carry more risk due to its exposure to potential disruptions, than other activation settings.
+    Consider this <strong>example</strong>: if you receive $50 with a <i>50%</i> chance and $152 with the remaining <i>50%</i>, this may be considered riskier
+    than receiving $99 at <i>50%</i> and $101 at <i>50%</i>.
+    On average both give you similar profits, $101 and $100, respectively.
+    While the first profit is slightly higher, it may also be described as riskier.
+</p>
+
+<p>
+    {% if player.in_treatment_group_toggle %}
+        Additionally, you have access to an <strong>interactive decision support system</strong>.
+        You can ask as many questions as you like.
+        Assume that the system knows the same as you, i.e. the problem setting, the provided activation setting, and your decision task.
+        Note that the system has no ability to foresee the future.
+    {% endif %}
+</p>
+
+<p>
+    {% if player.in_treatment_group_toggle %}
+    The quality of your answer depends on the questions you ask. 
+    For example, it works well to <strong>ask 'What if' questions</strong>. 
+    Use precise and comprehensive wording.
+    If the system cannot answer, it will inform you. 
+    You can then rephrase and ask again. 
+    Answers may take 10-20 seconds, but in rare cases longer. 
+    Please be patient and <strong>do not reload the page</strong>.
+    {% endif %}
+</p>

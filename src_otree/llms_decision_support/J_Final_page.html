@@ -1,0 +1,72 @@
+{{ block title }}
+    Final page
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        p {
+            text-align: justify;
+        }
+    </style>
+    {% if not player.termination_flag %}
+        <p>
+            <strong>COF$ {{ payoff_experiment_currency }}</strong> was randomly chosen for your payoff.
+        </p>    
+        <p>
+            It was chosen with a <strong>50:50 chance</strong> from your outcomes for both parts of the experiment:
+            <ul>
+                <li>Part 1: COF$ {{ p1_outcome }}</li>
+                <li>Part 2: COF$ {{ p2_outcome }}</li>
+            </ul>
+        </p>
+
+        <p>
+            This translates to a <strong>payoff</strong> in relation to your <strong>decisions</strong> of <strong>{{ CURRENCY }} {{ payoff_decisions_currency }}</strong>
+            
+            <i>
+                (=COF$ {{ payoff_experiment_currency }} &times; {{ COFD_TO_CURRENCY }} {{ CURRENCY }} / COF$).
+            </i>
+        </p>
+
+        <p>
+            
+            {% if CURRENCY == "EUR" %}
+                Your <strong>total payoff</strong> is <strong>{{ CURRENCY }} {{ payoff_currency }}</strong>     
+                (rounded up from your original payoff of {{ CURRENCY }} {{ payoff_currency_unrounded }} to one decimal for easier cash payout, if applicable).
+            {% else %}
+                Your <strong>total payoff</strong> is <strong>{{ CURRENCY }} {{ payoff_currency }}</strong>.
+            {% endif %}  
+            This stems from the base payoff of {{ CURRENCY }} {{ BASE_PAYOFF }}, plus any potentially earned bonuses from
+            previously answered understanding question sets on the first try ({{ CURRENCY }} {{ payoff_uq_bonus_currency }} in your case),
+            plus your payoff dependent on your decisions in either part 1 or part 2 (see above).
+        </p>
+    {% else %}
+        <p>
+            The experiment has been <strong>terminated</strong> since you exceeded the maximum number of tries allowed
+            to correctly answer one set of understanding questions.
+        </p>
+
+        <p>
+            Your <strong>payoff is {{ CURRENCY }} {{ payoff_currency }}</strong>.
+            This stems from the base payoff of {{ CURRENCY }} {{ BASE_PAYOFF }} plus any potentially earned bonuses from
+            previously answered question sets on the first try ({{ CURRENCY }} {{ payoff_uq_bonus_currency }} in your case).
+        </p>
+    {% endif %}
+
+    {% if CURRENCY == "USD" %}
+        <p>
+            Due to organizational policies, you will be paid via <strong>electronic gift certificate</strong>.
+            You should receive an email about this within five business days.
+        </p>
+    {% else %}
+        <p>
+            Please <strong>remain seated</strong>.
+            The study conductor will provide information on when and how to facilitate the payout process.
+            You will be paid in <strong>cash</strong> upon exiting the experiment.
+        </p>
+    {% endif %}
+    
+{{ endblock }}

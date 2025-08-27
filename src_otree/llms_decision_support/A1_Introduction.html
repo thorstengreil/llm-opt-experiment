@@ -1,0 +1,59 @@
+{{ block title }}
+    Introduction
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        p {
+            text-align: justify;
+        }
+    </style>
+    
+    <p>
+        Welcome to this experiment.
+        Before you start, please review the following information and decide if you agree to participate.
+    </p>
+
+    <p>
+        All relevant information for the experiment itself (e.g. payout) will be stated again later. 
+    </p>
+
+    {{ include 'llms_decision_support/includable_templates/informed_consent.html' }}
+
+    <h5>Declaration of Consent</h5>
+    <ul>
+        <li>I have received and read the information and consent form for the above-mentioned study.</li>
+        <li>I have been thoroughly informed in writing and orally about the purpose and procedure of the study, the benefits and risks of participation, and my rights and obligations.</li>
+        <li>I have had the opportunity to ask questions, which have been answered satisfactorily and completely.</li>
+        <li>I have been informed that participation is voluntary and that I have the right to withdraw my consent at any time without providing a reason and without facing any disadvantages.</li>
+    </ul>
+
+    <h5>Consent to Data Processing</h5>
+    <ul>
+        <li>The processing and use of my personal data for the above-mentioned study will be carried out exclusively as described in the section "Information on Data Protection."</li>
+        <li>I voluntarily consent to participate in the study and to the processing of my personal data as described.</li>
+    </ul>
+
+    {{ form.informed_consent}}
+
+    <br>
+    
+    {% if REQUIRE_SUBJECT_ID %}
+        {{ formfield 'subject_id'}}
+    {% endif %}
+
+    {% if CURRENCY == "EUR" %}
+        {{ formfield 'degree_program'}}
+    {% endif %}
+    
+    <p>
+        Finally, please refrain from discussing the study with others afterwards to ensure future participants remain unbiased.
+    </p>
+    <br>
+    
+    {{ next_button }}
+
+{{ endblock }}

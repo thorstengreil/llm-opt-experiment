@@ -1,0 +1,816 @@
+{{ block title }}
+    <div class="header-container">
+        <h3>
+            Part 1: Decide which suppliers and roasteries to use
+        </h3>
+        <button type="button" class="instructions-button" onclick="openInstructionsPopup()">Instructions</button>
+    </div>    
+{{ endblock }}
+
+{{ block content }}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Coffee Distribution Network</title>
+        <style>
+            .header-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+            }
+            body {
+                height: 100vh;
+                margin: 0;
+                background-color: #f4f4f4;
+                box-sizing: border-box;
+                display: flex;
+                justify-content: center;
+                align-items: top;
+                font-size: 13px;
+            }
+            p {
+                text-align: justify;
+            }
+            .main-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto;
+                gap: 20px;
+                width: 100%;
+                height: 100%;
+                position: relative;
+                grid-template-areas: 
+                    "item1 item1"
+                    "item3 item4";
+            }
+            .item1 {
+                grid-area: item1;
+            }
+            .item2 {
+                grid-area: item2;
+            }
+            .item3 {
+                grid-area: item3;
+            }
+            .item4 {
+                grid-area: item4;
+            }
+            .element-wrapper {
+                display: flex;
+                flex-direction: column;
+                background-color: #fff;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                padding: 20px;
+                box-sizing: border-box;
+                width: 100%;
+            }
+            .network {
+                display: flex;
+                justify-content: space-between;
+                padding: 0px;
+                align-items: flex-start;
+                position: relative;
+                width: 100%;
+                height: 100%;
+            }
+            .column {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .node {
+                width: 95px;
+                margin: 4px;
+                padding: 10px;
+                border: 1px solid #ccc;
+                cursor: pointer;
+                user-select: none;
+                text-align: center;
+            }
+            .node.active-supplier {
+                background-color: #b4e5a2;
+                border-color: #b4e5a2;
+            }
+            .node.active-mode1 {
+                background-color: #c1e5f5;
+                border-color: #c1e5f5;
+            }
+            .node.active-mode2 {
+                background-color: #5ab9e4;
+                border-color: #5ab9e4;
+            }
+            .node.connected {
+                background-color: lightgrey;
+            }
+            svg {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+            }
+            line {
+                stroke: #a0a2a3;
+                stroke-width: 1.0;
+                marker-end: url(#arrow);
+            }
+            #suppliers .node, #customers .node {
+                cursor: default;
+            }
+            .chat-container {
+                width: 100%;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(226, 251, 1, 0.5);
+                background-color: #fff;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .chat-window {
+                flex: 1;
+                padding: 20px;
+                overflow-y: auto;
+                border-bottom: 1px solid #ddd;
+                word-wrap: break-word;
+                display: flex;
+                flex-direction: column;
+            }
+            .chat-input {
+                display: flex;
+                border-top: 1px solid #ddd;
+            }
+            .chat-input input {
+                flex: 1;
+                padding: 10px;
+                border: none;
+                border-radius: 10px;
+            }
+            .chat-input button {
+                padding: 10px;
+                border: none;
+                background-color: #007bff;
+                color: white;
+                cursor: pointer;
+            }
+            .message {
+                margin: 10px 0;
+                padding: 10px 20px;
+                border-radius: 20px;
+                max-width: 70%;
+                word-wrap: break-word;
+                white-space: pre-wrap;
+            }
+            .message.user {
+                background-color: #007bff;
+                color: white;
+                align-self: flex-end;
+            }
+            .message.bot {
+                background-color: #eaeaea;
+                color: #333;
+                align-self: flex-start;
+            }
+            .dots {
+                display: inline-block;
+                width: 20px;
+                height: 10px;
+                position: relative;
+            }
+            .dots::before, .dots::after {
+                content: '';
+                display: inline-block;
+                width: 6px;
+                height: 6px;
+                background-color: #333;
+                border-radius: 50%;
+                position: absolute;
+                top: 0;
+            }
+            .dots::before {
+                left: 0;
+                animation: dots 1s infinite;
+            }
+            .dots::after {
+                right: 0;
+                animation: dots 1s infinite 0.5s;
+            }
+            @keyframes dots {
+                0%, 20% {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                50% {
+                    transform: translateX(6px);
+                    opacity: 0.5;
+                }
+                80%, 100% {
+                    transform: translateX(12px);
+                    opacity: 0;
+                }
+            }
+            .element {
+                display: flex;
+                flex-direction: column;
+                justify-content: left;
+                align-items: left;
+                background-color: #fff;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                padding: 20px;
+                width: 100%;
+            }
+            .element-selection {
+                display: flex;
+                flex-direction: column;
+                justify-content: left;
+                align-items: left;
+                background-color: #fff;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(226, 251, 1, 0.5);
+                padding: 20px;
+                width: 100%;
+            }
+            .instructions-button {
+                font-size: 16px;
+                padding: 10px 20px;
+                border-radius: 10px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+            @media screen and (max-width: 600px) {
+                .instructions-button {
+                    padding: 8px 16px;
+                }
+            }
+            .popup {
+                display: none;
+                position: fixed;
+                top: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 900px;
+                max-height: 90vh;
+                background-color: white;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                border-radius: 10px;
+                z-index: 1100;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+            .popup-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+            }
+            .popup-content {
+                max-height: calc(90vh - 120px); /* Adjust max-height to fit within the popup */
+                overflow-y: auto;
+            }
+            .close-button {
+                background: none;
+                border: none;
+                font-size: 20px;
+                cursor: pointer;
+            }
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+            }
+            .main-container .element {
+                align-self: start;
+            }
+            .pRrec {
+                margin-top: 0px;
+                margin-bottom: 3px;
+            }
+            .ulRec {
+                padding-left: 25px;
+                margin-bottom: 0px;
+            }
+            .general_error_msg {
+                color: #B64545;
+            }
+            .overlay-text {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background-color: rgba(255, 255, 255, 0.7);
+                padding: 5px;
+            }
+            .reminder-closing-button {
+                font-size: 16px;
+                padding: 10px 20px;
+                border-radius: 10px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                cursor: pointer;
+                width: 140px;
+            }
+            .columns-container-rec {
+                display: flex;
+                gap: 60px;
+            }
+            .columns-container-rec .column-rec {
+                flex: 1;
+                margin: 0;
+            }
+            .svg-wrapper {
+                display: grid;
+                justify-items: center; /* horizontal */
+            }
+            .svg-wrapper svg {
+                position: static !important; /* cancels absolute/fixed position from svg file */
+                display: block;
+                width: 100%;
+                height: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main-container">
+            <div id="network-image" class="element item1">
+                <p class="overlay-text">
+                    <strong>Full coffee network</strong> (unchanged):
+                </p>
+                
+                <div class="svg-wrapper">
+                    {% include "llms_decision_support/part1_problem_setting.svg" %}
+                </div>
+
+                <br>
+                <div class="columns-container-rec">
+                    <div class="column-rec">
+                        <p>
+                            Activation setting that <strong>maximizes average profit</strong> (but may carry <strong>more risk</strong> than other activations):
+                            <ul id="decisions-list" class="ulRec">
+                                {% for key, value in p1_provided_decisions.items() %}
+                                    {% if value != "do not activate" %}
+                                        <li data-value="{{ value }}"><span class="nodes-to-format">{{ key }}: {{ value }}</span></li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </p>
+                    </div>
+                    <div class="column-rec">
+                        <p>
+                            Choosing these decisions leads to one of these <strong>scenarios</strong> 
+                            (profit in COF$: probability in %):
+                            <ul class="ulRec">
+                                {% for key, value in p1_provided_scenarios.items() %}
+                                    <li>${{ key }}: <i>{{ value }}%</i></li>
+                                {% endfor %}
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            {% if in_treatment_group_toggle %}
+                <div class="chat-container item3">
+                    <div class="chat-window" id="chat-window"></div>
+                    <div class="chat-input">
+                        <input type="text" id="user-input" placeholder="Type your question here..." />
+                        <button type="button" onclick="sendQuestion()">Send</button>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div id="decisions-selection" class="element-selection {% if in_treatment_group_toggle %}item4{% else %}item3{% endif %}" >
+                <p>
+                    <strong>Please select</strong> which suppliers and roasteries to <strong>activate</strong> by clicking on them. 
+                </p>
+                <div class="network" id="network">
+                    <div id="suppliers" class="column"></div>
+                    <div id="roasteries" class="column"></div>
+                    <div id="customers" class="column"></div>
+                    <svg id="svg">
+                        <defs>
+                            <marker id="arrow" markerWidth="10" markerHeight="10" refX="3" refY="3"
+                                    orient="auto" markerUnits="strokeWidth">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#5f6871" />
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+
+                <br>
+
+                <p>
+                    <div class="svg-wrapper" width="400px">
+                        {% include "llms_decision_support/legend_part1.svg" %}
+                    </div>
+                </p>
+            </div>
+        </div>
+        
+        {% if ENABLE_REMINDER_POPUP %}
+            <div id="reminderOverlay" class="overlay"></div>
+        
+            <div id="reminderPopup" class="popup">
+                <div class="popup-header">
+                    <h2 style="color: red;">&#9888; Reminder</h2>
+                </div>
+                <div class="popup-content">
+                    <div class="card bg-light m-3">
+                        <div class="card-body">
+                            <h4>
+                                You will <strong>only</strong> go through <strong>1 round</strong>.
+                            </h4>
+                            <br>
+                            <p>
+                                Your <strong>final payoff</strong> will be determined by your performance in part 1
+                                or part 2 of the experiment (50:50 chance).
+                            </p>
+                            <p>
+                                Part 2 will <strong>not be a duplicate of part 1</strong>.
+                            </p>
+                            <br>
+                            <p>
+                                <strong>Click</strong> 'I understand' to start with part 1.
+                            </p>
+                            <br>
+                            <button type="button" class="reminder-closing-button" onclick="closeReminderPopup()">I understand</button>
+                        </div>    
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div id="instructionsOverlay" class="overlay" onclick="closeInstructionsPopup()"></div>
+
+        <div id="instructionsPopup" class="popup">
+            <div class="popup-header">
+                <h2>Instructions</h2>
+                <button type="button" class="close-button" onclick="closeInstructionsPopup()">×</button>
+            </div>
+            <div class="popup-content">
+                <div class="card bg-light m-3">
+                    <div class="card-body">
+                        {{ include 'llms_decision_support/includable_templates/UQ1_instructions.html' }}
+                        {{ include 'llms_decision_support/includable_templates/UQ2_instructions.html' }}
+                        {{ include 'llms_decision_support/includable_templates/UQ3_instructions.html' }}
+                        {{ include 'llms_decision_support/includable_templates/UQ4_instructions.html' }}
+                        {{ include 'llms_decision_support/includable_templates/UQ5_instructions.html' }}
+                        {{ include 'llms_decision_support/includable_templates/UQ6_instructions.html' }}
+                    </div>    
+                </div>
+            </div>
+        </div>
+        <div id="error-message" class="general_error_msg" style="display: none;">
+            <br>
+            You must activate at least one roastery or customer.
+        </div>
+        <br>
+        <button onclick="sendDecisions(event)" class="otree-btn-next btn btn-primary">
+            Next
+        </button>       
+
+        <script type="text/javascript">
+            var inTreatmentGroup = "{{ in_treatment_group_toggle|json }}" === 'true';
+            var enableReminderPopup = "{{ ENABLE_REMINDER_POPUP|json }}" === 'true';
+
+            const suppliers = ['supplier1', 'supplier2', 'supplier3'];
+            const roasteries = ['roastery1', 'roastery2'];
+            const customers = ['customer1', 'customer2', 'customer3'];
+
+            const validConnections = {
+                "supplier1": ['roastery1', 'roastery2'],
+                "supplier2": ['roastery1', 'roastery2'],
+                "supplier3": ['roastery1', 'roastery2'],
+                "roastery1": ['customer1', 'customer2', 'customer3'],
+                "roastery2": ['customer1', 'customer2', 'customer3']
+            };
+
+            function createNode(name, containerId) {
+                const container = document.getElementById(containerId);
+                const node = document.createElement('div');
+                node.className = 'node';
+                node.innerText = formatEntityName(name);
+                node.id = name;
+                
+                const isSupplier = suppliers.includes(name);
+                const isCustomer = customers.includes(name);
+                if (!isCustomer) {
+                    // Add event listener for click, passing true for suppliers and false for roasteries
+                    node.addEventListener('click', () => {
+                        toggleActivation(node, isSupplier);
+                        updateNetwork();
+                    });
+                }
+                
+                container.appendChild(node);
+            }
+
+            function toggleActivation(node, isSupplier) {
+                if (isSupplier) {
+                    // Suppliers only have two modes: activate or do not activate
+                    if (node.classList.contains('active-supplier')) {
+                        node.classList.remove('active-supplier');
+                    } else {
+                        node.classList.add('active-supplier');
+                    }
+                } else {
+                    // Roasteries have three modes
+                    if (node.classList.contains('active-mode1')) {
+                        node.classList.remove('active-mode1');
+                        node.classList.add('active-mode2');
+                    } else if (node.classList.contains('active-mode2')) {
+                        node.classList.remove('active-mode2');
+                    } else {
+                        node.classList.add('active-mode1');
+                    }
+                }
+            }
+
+            function updateNetwork() {
+                updateArrows();
+                updateCustomerColors();
+            }
+
+            function updateArrows() {
+                const svg = document.getElementById('svg');
+                svg.innerHTML = `<defs>
+                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="3" refY="3"
+                            orient="auto" markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#5f6871" />
+                    </marker>
+                </defs>`;
+
+                const roasteryElements = roasteries.map(id => document.getElementById(id));
+                const customerElements = customers.map(id => document.getElementById(id));
+                const supplierElements = suppliers.map(id => document.getElementById(id)); // New supplier list
+
+                // Check if any supplier is activated
+                const anySupplierActivated = supplierElements.some(supplier => supplier.classList.contains('active-supplier'));
+                
+                let hasActiveSupplier = false;
+
+                // Draw arrows from active suppliers to roasteries
+                supplierElements.forEach(supplier => {
+                    if (supplier.classList.contains('active-supplier')) {
+                        hasActiveSupplier = true;
+                        roasteryElements.forEach(roastery => {
+                            drawArrow(supplier, roastery, 'right'); // Draw arrows from suppliers to roasteries
+                        });
+                    }
+                });
+
+                roasteryElements.forEach(roastery => {
+                    // Only draw arrows if any supplier is activated
+                    if (anySupplierActivated && (roastery.classList.contains('active-mode1') || roastery.classList.contains('active-mode2'))) {
+                        customerElements.forEach(customer => {
+                            drawArrow(roastery, customer, 'right');
+                        });
+                    }
+                });
+            }
+
+            function drawArrow(fromElement, toElement, direction) {
+                if (!validConnections[fromElement.id] || !validConnections[fromElement.id].includes(toElement.id)) {
+                    return;
+                }
+
+                const svg = document.getElementById('svg');
+                const network = document.getElementById('network');
+                const networkRect = network.getBoundingClientRect();
+                const fromRect = fromElement.getBoundingClientRect();
+                const toRect = toElement.getBoundingClientRect();
+                const fromX = fromRect.left - networkRect.left + (direction === 'right' ? fromRect.width : 0);
+                const fromY = fromRect.top - networkRect.top + fromRect.height / 2;
+                const toX = toRect.left - networkRect.left + (direction === 'right' ? -4 : toRect.width + 4);
+                const toY = toRect.top - networkRect.top + toRect.height / 2;
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', fromX);
+                line.setAttribute('y1', fromY);
+                line.setAttribute('x2', toX);
+                line.setAttribute('y2', toY);
+                svg.appendChild(line);
+            }
+
+            function updateCustomerColors() {
+                const activeRoasteries = roasteries.filter(id => {
+                    const element = document.getElementById(id);
+                    return element.classList.contains('active-mode1') || element.classList.contains('active-mode2');
+                });
+
+                const activeSuppliers = suppliers.filter(id => {
+                    const element = document.getElementById(id);
+                    return element.classList.contains('active-supplier');
+                });
+
+                // Only change customer color if at least one roastery and one supplier are active
+                if (activeRoasteries.length > 0 && activeSuppliers.length > 0) {
+                    customers.forEach(customerId => {
+                        const customerElement = document.getElementById(customerId);
+                        const isConnected = activeRoasteries.some(roasteryId => validConnections[roasteryId].includes(customerId));
+                        customerElement.classList.toggle('connected', isConnected);
+                    });
+                } else {
+                    // Reset customer color if no valid roastery-supplier connection
+                    customers.forEach(customerId => {
+                        const customerElement = document.getElementById(customerId);
+                        customerElement.classList.remove('connected');
+                    });
+                }
+            }
+            
+            function sendQuestion() {
+                const userInput = document.getElementById('user-input');
+                const message = userInput.value.trim();
+                if (message) {
+                    displayMessage(message, 'user');
+                    userInput.value = '';
+                    showDots();
+                    let question_dict = {};
+                    question_dict["information_type"] = "question";
+                    question_dict["message"] = String(message);
+                    liveSend(question_dict);
+                }
+            }
+
+            function displayMessage(message, sender) {
+                const chatWindow = document.getElementById('chat-window');
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', sender);
+                messageElement.innerText = message;
+                chatWindow.appendChild(messageElement);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+
+            function showDots() {
+                const chatWindow = document.getElementById('chat-window');
+                const dotsElement = document.createElement('div');
+                dotsElement.classList.add('message', 'bot');
+                dotsElement.innerHTML = '<div class="dots"></div>';
+                dotsElement.id = 'dots';
+                chatWindow.appendChild(dotsElement);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+            
+            function liveRecv(data) {
+                answer = String(data);
+                const dotsElement = document.getElementById('dots');
+                if (dotsElement) {
+                    dotsElement.remove();
+                }
+                displayMessage(answer, 'bot');
+            }
+
+            function sendDecisions() {
+                const decisionData = {
+                    information_type: "decisions",
+                    supplierStates: {},
+                    roasteryStates: {}
+                };
+
+                let isSupplierActive = false;
+                let isRoasteryActive = false;
+
+                suppliers.forEach(supplier => {
+                    const element = document.getElementById(supplier);
+                    decisionData.supplierStates[supplier] = element.classList.contains('active-supplier') ? 'activate' : "do not activate";
+                    const isActive = element.classList.contains('active-supplier');
+                    if (isActive) {
+                        isSupplierActive = true;
+                    }
+                });
+
+                roasteries.forEach(roastery => {
+                    const element = document.getElementById(roastery);
+                    let roasteryStatus;
+                    if (element.classList.contains('active-mode2')) {
+                        roasteryStatus = 'activate (high)';
+                    } else if (element.classList.contains('active-mode1')) {
+                        roasteryStatus = 'activate (low)';
+                    } else {
+                        roasteryStatus = "do not activate";
+                    }
+                    decisionData.roasteryStates[roastery] = roasteryStatus;
+                    if (roasteryStatus !== "do not activate") {
+                        isRoasteryActive = true;
+                    }
+                });
+                
+                if (isSupplierActive || isRoasteryActive) {
+                    document.getElementById('error-message').style.display = 'none'; // Hide error if previously shown
+                    liveSend(decisionData);
+                } else {
+                    document.getElementById('error-message').style.display = 'block'; // Show error message
+                    event.preventDefault()
+                }
+            }
+
+            function setElementHeight() {
+                // Adapt chat container height
+                if (inTreatmentGroup) {
+                    // Select all elements to compare, excluding the chat container's parent
+                    const element = document.getElementById('decisions-selection');
+                    const chatContainerWrapper = document.querySelector('.chat-window');
+                    let maxHeight = 0;
+
+                    if (element !== chatContainerWrapper.parentElement) {  // Exclude the immediate parent of the chat container
+                        chatContainerWrapper.style.height = element.offsetHeight + 'px';
+                    };
+                }
+            }
+
+            // Call the function when the window is resized to adjust for changes
+            window.addEventListener('resize', () => {
+                setElementHeight();
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                setElementHeight();
+                
+                // Enter key event listener
+                if (inTreatmentGroup) {
+                    document.getElementById('user-input').addEventListener('keydown', function(event) {
+                        if (event.keyCode == 13) {
+                            event.preventDefault();
+                            sendQuestion();
+                        }
+                    });
+                }
+                // Create network
+                suppliers.forEach(supplier => createNode(supplier, 'suppliers'));
+                roasteries.forEach(roastery => createNode(roastery, 'roasteries'));
+                customers.forEach(customer => createNode(customer, 'customers'));
+                updateNetwork();
+                
+                // In the provided solution, color activated entities grey and not activated ones black
+                var listItems = document.querySelectorAll('#decisions-list li');
+                
+                listItems.forEach(function(item) {
+                    var value = item.getAttribute('data-value');
+                    var span = item.querySelector('span');
+
+                    if (value === "do not activate") {
+                        span.style.color = '#BEBEBE';
+                    } else {
+                        span.style.color = 'black';
+                    }
+                });
+                
+                // Change the format from e.g. "supplier1" to "Supplier 1"
+                const decisionItems = document.querySelectorAll('.nodes-to-format');
+                decisionItems.forEach(item => {
+                    const parts = item.textContent.split(': ');
+                    const formattedName = formatEntityName(parts[0]);
+                    item.textContent = `${formattedName}: ${parts[1]}`;
+                });
+                
+                if (enableReminderPopup && !inDummyRound) {
+                    document.getElementById('reminderPopup').style.display = 'block';
+                    document.getElementById('reminderOverlay').style.display = 'block';
+                }
+
+                setElementHeight();
+
+                // Observe DOM changes for dynamic updates
+                const observer = new MutationObserver(mutations => {
+                    mutations.forEach(() => setElementHeight());
+                });
+            });
+
+            function formatEntityName(name) {
+                // Capitalize the first letter and add a space before the number
+                return name.replace(/(\d+)/, ' $1').replace(/^./, str => str.toUpperCase());
+            }
+
+            function openInstructionsPopup() {
+                document.getElementById('instructionsPopup').style.display = 'block';
+                document.getElementById('instructionsOverlay').style.display = 'block';
+            }
+
+            function closeInstructionsPopup() {
+                document.getElementById('instructionsPopup').style.display = 'none';
+                document.getElementById('instructionsOverlay').style.display = 'none';
+            }
+
+            function closeReminderPopup() {
+                document.getElementById('reminderPopup').style.display = 'none';
+                document.getElementById('reminderOverlay').style.display = 'none';
+            }
+        </script>
+    </body>
+    </html>
+{{ endblock }}

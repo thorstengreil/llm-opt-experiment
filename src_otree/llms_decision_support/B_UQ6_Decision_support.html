@@ -1,0 +1,324 @@
+{{ block title }}
+    Understanding Questions (6/{{ NR_OF_UQ_PAGES }})
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        p {
+            text-align: justify;
+        }
+        .chat-container {
+            width: 50%;
+            height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(226, 251, 1, 0.5);
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+            word-wrap: break-word;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+        }
+        .chat-input button {
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px 20px;
+            border-radius: 20px;
+            max-width: 70%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        .message.user {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+        }
+        .message.bot {
+            background-color: #eaeaea;
+            color: #333;
+            align-self: flex-start;
+        }
+        .dots {
+            display: inline-block;
+            width: 20px;
+            height: 10px;
+            position: relative;
+        }
+        .dots::before, .dots::after {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #333;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+        }
+        .dots::before {
+            left: 0;
+            animation: dots 1s infinite;
+        }
+        .dots::after {
+            right: 0;
+            animation: dots 1s infinite 0.5s;
+        }
+        @keyframes dots {
+            0%, 20% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translateX(6px);
+                opacity: 0.5;
+            }
+            80%, 100% {
+                transform: translateX(12px);
+                opacity: 0;
+            }
+        }
+        .general_error_msg {
+            color: #B64545;
+        }
+        .uq_sucess_msg {
+            color: #02960eaf;
+        }
+    </style>
+    {% if form.errors %}
+        <div class="general_error_msg">
+            You have {{ player.uq6_tries_left }} more tries left to submit all answers correctly.
+        </div>
+    {% endif %}
+    {% if player.uq5_tries_left == MAX_UQ_TRIES_EX_POST and player.uq6_tries_left == MAX_UQ_TRIES %}
+        <div class="uq_sucess_msg">
+            <strong>You gained {{ CURRENCY }} {{ UQ_BONUS_PER_PAGE }}</strong> for answering all questions correctly on the first try on the previous page!
+        </div>
+    {% endif %}
+    <br>
+    
+    {{ include 'llms_decision_support/includable_templates/UQ6_instructions.html' }}
+    
+    {% if not DEACTIVATE_UQS %}
+        {{ form.provided_setting_basis.label }}
+        {{ form.provided_setting_basis}}
+        {{ formfield_errors 'provided_setting_basis' }}
+        <br>
+
+        {{ form.provided_setting_risk.label }}
+        {{ form.provided_setting_risk}}
+        {{ formfield_errors 'provided_setting_risk' }}
+        <br>
+
+        <p>
+            (Q6.3) Assume there is a sample network with 3 suppliers, 3 roasteries and 3 customers.
+            The following provides the disruption probabilities for different suppliers and roasteries.
+            (entities not listed here cannot default):
+            <ul>
+                {% for key, value in disruption_risks_info_UQ_2.items() %}
+                    <li data-value="{{ value }}"><span class="nodes-to-format">{{ key }}: <i>{{ value }}%</i></span></li>
+                {% endfor %}
+            </ul>
+            {{ form.risk_judgement.label }}
+            {{ form.risk_judgement}}
+            {{ formfield_errors 'risk_judgement' }}
+        </p>
+
+        {% if player.in_treatment_group_toggle %}
+            {{ form.decision_support_system_role.label }}
+            {{ form.decision_support_system_role}}
+            {{ formfield_errors 'decision_support_system_role' }}
+            <br>
+        {% endif %}
+
+        {% if player.in_treatment_group_toggle %}
+            (Q6.5) Type a question into the chat input below and press 'Enter' or click the 'Send' button. 
+            For this test, the content of your message does not matter, but it cannot be empty.
+            <br><br>
+            <div class="chat-container">
+                <div class="chat-window" id="chat-window"></div>
+                <div class="chat-input">
+                    <input type="text" id="user-input" placeholder="Type your question here..." />
+                    <button type="button" onclick="sendQuestion()">Send</button>
+                </div>
+            </div>
+            {{ formfield_errors 'test_question' }}
+        {% endif %}
+    {% endif %}
+    
+    <script type="text/javascript">
+        var inTreatmentGroupStr = "{{ player.in_treatment_group_toggle }}";
+        var inTreatmentGroup = true
+        if (inTreatmentGroupStr === "False") {
+            inTreatmentGroup = false
+        }
+        var testQuestionInput
+
+        var dummyAnswer = "This is a dummy answer. During the experiment, you will receive an actual answer to your question."
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Clear any existing messages in localStorage at the start of a new session
+            if (!sessionStorage.getItem('sessionActive')) {
+                localStorage.removeItem('testQuestionInputStorage');
+                localStorage.removeItem('dummyAnswer');
+                sessionStorage.setItem('sessionActive', true);
+            }
+            
+            // Restore chat input value if it exists in localStorage
+            const savedMessage = localStorage.getItem('testQuestionInputStorage');
+            const savedDummyAnswer = localStorage.getItem('dummyAnswer');
+            if (savedMessage) {
+                displayMessage(savedMessage, 'user');
+                // Also set the form field if it was previously set
+                setTestQuestionField(savedMessage);
+                displayMessage(dummyAnswer, 'bot');
+            }
+            
+            // Set up Enter key listener for message submission
+            if (inTreatmentGroup) {
+                document.getElementById('user-input').addEventListener('keydown', function(event) {
+                    if (event.keyCode == 13) {
+                        event.preventDefault();
+                        sendQuestion();
+                    }
+                });
+            }
+        });
+        
+        function sendQuestion() {
+            const userInput = document.getElementById('user-input');
+            const message = userInput.value.trim();
+            if (message) {
+                displayMessage(message, 'user');
+                userInput.value = '';
+                showDots();
+
+                // Save the message to localStorage
+                localStorage.setItem('testQuestionInputStorage', message);
+
+                // Also set the hidden form field for submission
+                setTestQuestionField(message);
+
+                // Save the message in a local variable
+                testQuestionInput = String(message);
+                
+                setTimeout(function() {
+                    const dotsElement = document.getElementById('dots');
+                    if (dotsElement) {
+                        dotsElement.remove();
+                    }
+                    
+                    displayMessage(dummyAnswer, 'bot');
+                }, 5000); // 5000 milliseconds
+            }
+        }
+
+        function displayMessage(message, sender) {
+            const chatWindow = document.getElementById('chat-window');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender);
+            messageElement.innerText = message;
+            chatWindow.appendChild(messageElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showDots() {
+            const chatWindow = document.getElementById('chat-window');
+            const dotsElement = document.createElement('div');
+            dotsElement.classList.add('message', 'bot');
+            dotsElement.innerHTML = '<div class="dots"></div>';
+            dotsElement.id = 'dots';
+            chatWindow.appendChild(dotsElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+        
+        function liveRecv(data) {
+            answer = String(data);
+            const dotsElement = document.getElementById('dots');
+            if (dotsElement) {
+                dotsElement.remove();
+            }
+            displayMessage(answer, 'bot');
+        }
+        
+        function setTestQuestionField(message) {
+            let testQuestion = document.getElementById('test_question');
+            if (!testQuestion) {
+                testQuestion = document.createElement('input');
+                testQuestion.type = 'hidden';
+                testQuestion.name = 'test_question';
+                testQuestion.id = 'test_question';
+                document.querySelector('form').appendChild(testQuestion);
+            }
+            testQuestion.value = message;
+        }
+
+        function submitChatQuestion() {
+            if (inTreatmentGroup) {
+                if (testQuestionInput) {
+                    setTestQuestionField(testQuestionInput);
+                }
+                else {
+                    const testQuestionInputHelper = localStorage.getItem('testQuestionInputStorage');
+                    setTestQuestionField(testQuestionInputHelper);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {            
+            // Change the format from e.g. "supplier1" to "Supplier 1"
+            const decisionItems = document.querySelectorAll('.nodes-to-format');
+            decisionItems.forEach(item => {
+                const parts = item.textContent.split(': ');
+                const formattedName = formatEntityName(parts[0]);
+                item.innerHTML = `${formattedName}: <i>${parts[1]}</i>`;
+            });
+        });
+
+        function formatEntityName(name) {
+            // Capitalize the first letter and add a space before the number
+            return name.replace(/(\d+)/, ' $1').replace(/^./, str => str.toUpperCase());
+        }
+
+    </script>
+
+    <br>
+    
+    <button onclick="submitChatQuestion()" class="otree-btn-next btn btn-primary">
+        Next
+    </button>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+{{ endblock }}

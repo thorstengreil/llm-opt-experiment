@@ -1,0 +1,78 @@
+<style>
+    body {
+        background-color: #f4f4f4;
+    }
+    .element_image {
+        display: flex;
+        flex-direction: column;
+        justify-content: left;
+        align-items: left;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        padding: 20px;
+        width: 100%;
+    }
+    p {
+        text-align: justify;
+    }
+    .pRrec {
+        margin-top: 0px;
+        margin-bottom: 5px;
+    }
+    .ulRec {
+        padding-left: 25px;
+        margin-bottom: 0px;
+    }
+    .general_error_msg {
+        color: #B64545;
+    }
+    .svg-wrapper {
+        display: grid;
+        justify-items: center; /* horizontal */
+    }
+    .svg-wrapper svg {
+        position: static !important; /* cancels absolute/fixed position from svg file */
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+</style>
+
+<h3>
+    Part 1: Decisions, Profit, Revenue & Costs
+</h3>
+
+<p class="pRrec">
+    You will make <strong>activation decisions</strong> for suppliers and roasteries:
+    <ul class="ulRrec">
+        <li>For each <strong>supplier</strong>, you choose whether to <strong>activate</strong> it or not</li>
+        <li>For each <strong>roastery</strong>, you decide whether to activate it in <strong>'Low' or 'High'
+            capacity mode</strong>, or to not activate it</li>
+    </ul>
+    You need to <strong>activate</strong> at least one supplier and one roastery to be able to deliver any coffee.
+</p>
+<div class="element_image">
+    <div class="svg-wrapper">
+        {% include "llms_decision_support/part1_problem_setting.svg" %}
+    </div>
+</div>
+<br>
+<p class="pRrec">
+    Based on the decisions you make, you will generate profit.
+    Profit is defined as <strong>revenue minus all costs</strong>:
+    <ul class="ulRrec">
+        <li><strong>Revenue</strong> comes from coffee sold to customers.
+            Not all demand must be met</li>
+        <li><strong>Fixed cost</strong> of activating any <strong>supplier</strong> apply only if you choose to activate this supplier</li>
+        <li><strong>Fixed cost</strong> of activating any <strong>roastery</strong> apply solely if you decide to activate this roastery
+            (capacity modes 'High' and 'Low' incur different cost)</li>
+        <li>Variable <strong>shipping cost</strong> apply to and from roasteries</li>
+        <li>Variable <strong>roasting cost</strong> apply per unit at roasteries (different for light and dark roasts)</li>
+    </ul>
+</p>
+<p>
+    The fictional company you work for has a performance <strong>bonus pool</strong> filled with <strong>COF$ {{ ENDOWMENT }}</strong>.
+    The profit you receive from your decisions will be combined with this bonus pool, either <strong>increasing or decreasing</strong> its final size.
+    This final size of the pool will determine your <strong>outcome for part 1</strong> of the experiment.
+</p>

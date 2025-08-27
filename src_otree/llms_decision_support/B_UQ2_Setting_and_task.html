@@ -1,0 +1,46 @@
+{{ block title }}
+    Understanding Questions (2/{{ NR_OF_UQ_PAGES }})
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        .general_error_msg {
+            color: #B64545;
+        }
+        .uq_sucess_msg {
+            color: #02960eaf;
+        }
+    </style>
+    {% if form.errors %}
+        <div class="general_error_msg">
+            You have {{ player.uq2_tries_left }} more tries left to submit all answers correctly.
+        </div>
+    {% endif %}
+    {% if player.uq1_tries_left == MAX_UQ_TRIES_EX_POST and player.uq2_tries_left == MAX_UQ_TRIES %}
+        <div class="uq_sucess_msg">
+            <strong>You gained {{ CURRENCY }} {{ UQ_BONUS_PER_PAGE }}</strong> for answering all questions correctly on the first try on the previous page!
+        </div>
+    {% endif %}
+    <br>
+    
+    {{ include 'llms_decision_support/includable_templates/UQ2_instructions.html' }}
+
+    {{ formfields }}
+
+    <br>
+    
+    {{ next_button }}
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+{{ endblock }}

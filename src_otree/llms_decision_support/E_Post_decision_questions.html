@@ -1,0 +1,181 @@
+{{ block title }}
+    Post-decision questions
+{{ endblock }}
+
+{{ block content }}
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        p {
+            text-align: justify;
+        }
+        .do-not-show {
+            display: none;
+        }
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+        .element {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 20px;
+            width: 100%;
+        }
+        .bottom-align {
+            vertical-align: bottom;
+        }
+        .top-align {
+            vertical-align: top;
+        }
+        .column-padding {
+            padding: 1px 10px;
+        }
+        .intermittent-border {
+            position: relative;
+        }
+        .intermittent-border::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: calc(100% - 7px);
+            height: 1px;
+            background-color: black;
+        }
+        .svg-wrapper {
+            display: grid;
+            justify-items: center; /* horizontal */
+        }
+        .svg-wrapper svg {
+            position: static !important; /* cancels absolute/fixed position from svg file */
+            display: block;
+            width: 150px;
+            height: auto;
+        }
+        .svg-wrapper-legend {
+            display: grid;
+            justify-items: center; /* horizontal */
+        }
+        .svg-wrapper-legend svg {
+            position: static !important; /* cancels absolute/fixed position from svg file */
+            display: block;
+            width: 500px;
+            height: auto;
+        }
+    </style>
+
+    <div class="main-container">
+        <div class="element">
+            <p>
+                Here are again <strong>your decisions for part 1 and part 2</strong>:
+            </p>
+            <table>
+                <tr>
+                    <th class="bottom-align column-padding">
+                        <i>Part 1 >></i>
+                    </th>
+                    <th class="bottom-align column-padding">
+                        
+                    </th>
+                    <th class="bottom-align column-padding">
+                        
+                    </th>
+                    <th class="bottom-align column-padding">
+                        
+                    </th>
+                    <th class="bottom-align column-padding">
+                        <i>Part 2 >></i>
+                    </th>
+                    <th class="bottom-align column-padding">
+
+                    </th>
+                </tr>
+                <tr>
+                    <th class="bottom-align column-padding intermittent-border">
+                        Scenarios and<br>
+                        probabilities
+                    </th>
+                    <th class="bottom-align column-padding intermittent-border">
+                        Underlying<br>
+                        decisions
+                    </th>
+                    <th class="bottom-align column-padding">
+                        
+                    </th>
+                    <th class="bottom-align column-padding">
+                        
+                    </th>
+                    <th class="bottom-align column-padding intermittent-border">
+                        Scenarios and<br>
+                        probabilities
+                    </th>
+                    <th class="bottom-align column-padding intermittent-border">
+                        Underlying<br>
+                        decisions
+                    </th>
+                </tr>
+                <tr>
+                    <td class="top-align column-padding">
+                        <ul style="padding-left: 20px;">
+                            {% for key, value in p1_scenarios_and_probs.items %}
+                                <li>{{ key }}: {{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td class="top-align column-padding">
+                        
+                        <div class="svg-wrapper" width="125px">
+                            {% include p1_image_path %}
+                        </div>
+                        <br>
+                        <br>
+                    </td>
+                    <td class="top-align column-padding">
+                        
+                    </td>
+                    <td class="top-align column-padding">
+                        
+                    </td>
+                    <td class="top-align column-padding">
+                        <ul style="padding-left: 20px;">
+                            {% for key, value in p2_scenarios_and_probs.items %}
+                                <li>{{ key }}: {{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td class="top-align column-padding">
+                        <div class="svg-wrapper" width="125px">
+                            {% include p2_image_path %}
+                        </div>
+                        <br>
+                        <br>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <div class="svg-wrapper-legend">
+                {% include "llms_decision_support/legend_part2.svg" %}
+            </div>
+        </div>
+    </div>
+    
+    <br>
+
+    {{ formfield "change_p1_decision" }}
+
+    <br>
+    
+    <p>
+        Please click on the <strong>'Next' button</strong> to view your outcome for <strong>part 1</strong> (not influenced by your choice on this page).
+    </p>
+    {{ next_button }}
+{{ endblock }}

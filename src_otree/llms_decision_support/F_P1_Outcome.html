@@ -1,0 +1,135 @@
+{{ block title }}
+    Part 1: Outcome
+{{ endblock }}
+
+{{ block content }}
+
+<head>
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items to the top */
+        }
+        p {
+            text-align: justify;
+        }
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+        .element {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 20px;
+            width: 100%;
+        }
+        .svg-wrapper {
+            display: grid;
+            justify-items: center; /* horizontal */
+        }
+        .svg-wrapper svg {
+            position: static !important; /* cancels absolute/fixed position from svg file */
+            display: block;
+            width: 900px;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="element">
+            <p>
+                This happened regarding <strong>disruptions</strong>:
+                <ul>
+                    {% for key, value in p1_realized_disruptions.items() %}
+                        <li>{{ key }}: {% if value %}disruption occurred!{% else %}no disruption{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            </p>
+
+            <p>
+                Your decisions led to a realized <strong>profit of COF$
+                {{ p1_outcome }}</strong>.
+            </p>
+
+            <p>
+                Your supplier and roastery usage <strong>decisions</strong>
+                (please note: these are <strong>your original decisions</strong>, i.e. they did not change, irrespective of your answer on the previous page):
+                <ul id="decisions-list">
+                    {% for key, value in decisions.items() %}
+                        <li data-value="{{ value }}"><span>{{ key }}: {{ value }}</span></li>
+                    {% endfor %}
+                </ul>
+            </p>
+        </div>
+        <div class="element">
+            <p>
+                <strong>Upfront information</strong> for you to review again if you like:
+            </p>
+
+            <p>
+                <strong>Coffee network</strong>:
+            </p>
+
+            <div class="svg-wrapper">
+                {% include "llms_decision_support/part1_problem_setting.svg" %}
+            </div>
+            <br>
+
+            <p>
+                <strong>Provided activation setting</strong>:
+                <ul id="decisions-list">
+                    {% for key, value in p1_provided_decisions.items() %}
+                        <li data-value="{{ value }}"><span>{{ key }}: {{ value }}</span></li>
+                    {% endfor %}
+                </ul>
+                <span class="inline-text">based on <strong>scenarios</strong> (profit in COF$: probability in %):</span>
+                <ul>
+                    {% for key, value in p1_provided_scenarios.items() %}
+                        <li>COF$ {{ key }}: <i>{{ value }}%</i></li>
+                    {% endfor %}
+                </ul>
+            </p>
+        </div>
+        <div class="element">
+            <p>
+                Please click on the <strong>'Next' button</strong> to view your outcome for part 2.
+            </p>
+        </div>
+    </div>
+
+    <br>
+
+    {{ next_button }}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var listItems = document.querySelectorAll('#decisions-list li');
+
+        listItems.forEach(function(item) {
+            var value = item.getAttribute('data-value');
+            var span = item.querySelector('span');
+
+            if (value === "do not activate") {
+                span.style.color = '#BEBEBE';
+            } else {
+                span.style.color = 'black';
+            }
+        });
+    });
+</script>
+</body>
+{{ endblock }}

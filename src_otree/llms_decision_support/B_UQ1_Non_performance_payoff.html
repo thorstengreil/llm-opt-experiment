@@ -1,0 +1,38 @@
+{{ block title }}
+    Understanding Questions (1/{{ NR_OF_UQ_PAGES }})
+{{ endblock }}
+
+{{ block content }} 
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        .general_error_msg {
+            color: #B64545;
+        }
+    </style>
+    {% if form.errors %}
+        <div class="general_error_msg">
+            You have {{ player.uq1_tries_left }} more tries left to submit all answers correctly.
+        </div>
+    {% endif %}
+    <br>
+    
+    {{ include 'llms_decision_support/includable_templates/UQ1_instructions.html' }}
+
+    {{ formfields }}
+
+    <br>
+    
+    {{ next_button }}
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+{{ endblock }}
